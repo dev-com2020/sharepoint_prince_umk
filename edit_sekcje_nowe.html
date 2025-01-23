@@ -1,5 +1,24 @@
 <script>
   (async function () {
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const toolbars = document.querySelectorAll(".ms-formtoolbar");
+      const deltaPlaceholder = document.querySelector("#DeltaPlaceHolderMain");
+
+      if (!deltaPlaceholder) {
+        console.error("Nie znaleziono DeltaPlaceHolderMain.");
+        return;
+      }
+
+      toolbars.forEach((toolbar) => {
+        if (toolbar.textContent.trim().includes("Wersja")) {
+          // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
+          deltaPlaceholder.appendChild(toolbar);
+          console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
+        }
+      });
+    });
+
     document.addEventListener('DOMContentLoaded', async () => {
       const formTable = document.querySelector('.ms-formtable');
       if (!formTable) {
@@ -38,6 +57,19 @@ rows.forEach((row, index) => {
       ];
   
       const formContainer = formTable.parentElement;
+
+      const infoDiv = document.createElement('div');
+   infoDiv.style.backgroundColor = '#ff0000';
+  infoDiv.style.border = '1px solid #ffcc00';
+  infoDiv.style.padding = '10px';
+  infoDiv.style.marginBottom = '10px';
+  infoDiv.style.borderRadius = '5px';
+  infoDiv.style.fontWeight = 'bold';
+  infoDiv.textContent =
+    "Jesteś w trybie edycji. Podczas wypełniania poszczególnych pól w formularzu proszę o dokładne zapoznanie się z opisami do poszczególnych pól.";
+
+  // Dodanie div przed sekcją 1
+  formContainer.insertBefore(infoDiv, formContainer.firstChild);
   
       const allowedGroups = [
         "ADMINISTRATORZY TECHNICZNI (SZZ)",
@@ -73,26 +105,29 @@ rows.forEach((row, index) => {
       }
   
       const userHasAccess = await isUserInAllowedGroup();
-  
+
       sections.forEach(section => {
         const sectionDiv = document.createElement('div');
         sectionDiv.className = 'form-section';
-  
+
         const sectionHeader = document.createElement('div');
-        sectionHeader.textContent = section.title;
+        sectionHeader.textContent = `➕ ${section.title}`;
         sectionHeader.className = 'section-header';
-  
+
         const sectionContent = document.createElement('div');
         sectionContent.className = 'section-content';
-  
+
         if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
           sectionContent.style.display = 'block';
+          sectionHeader.textContent = `➖ ${section.title}`;
         } else if (section.title === "SEKCJA 3" && userHasAccess) {
           sectionContent.style.display = 'block';
+          sectionHeader.className = 'section-header_3'
+          sectionHeader.textContent = `➖ ${section.title}`;
         } else {
           sectionContent.style.display = 'none';
         }
-  
+
         if (section.range) {
           rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
             sectionContent.appendChild(row);
@@ -103,115 +138,127 @@ rows.forEach((row, index) => {
             .forEach(element => {
               const subSection = document.createElement('div');
               subSection.className = 'sub-section';
-  
+
               const subSectionHeader = document.createElement('div');
               subSectionHeader.textContent = element.text;
               subSectionHeader.className = 'sub-section-header';
-  
+
               const subSectionContent = document.createElement('div');
               subSectionContent.className = 'sub-section-content';
-  
+
               subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
-  
+
               rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
                 subSectionContent.appendChild(row);
               });
-  
+
               subSectionHeader.addEventListener('click', () => {
                 subSectionContent.style.display =
                   subSectionContent.style.display === 'none' ? 'block' : 'none';
               });
-  
+
               subSection.appendChild(subSectionHeader);
               subSection.appendChild(subSectionContent);
               sectionContent.appendChild(subSection);
             });
         }
-  
+
         sectionHeader.addEventListener('click', () => {
-          sectionContent.style.display =
-            sectionContent.style.display === 'none' ? 'block' : 'none';
+          const isHidden = sectionContent.style.display === 'none';
+          sectionContent.style.display = isHidden ? 'block' : 'none';
+          sectionHeader.textContent = `${isHidden ? '➖' : '➕'} ${section.title}`;
         });
-  
+
         sectionDiv.appendChild(sectionHeader);
         sectionDiv.appendChild(sectionContent);
         formContainer.appendChild(sectionDiv);
       });
-  
+
       formTable.style.display = "none";
     });
   })();
-  </script>
+</script>
   
   
 <style>
+  .ms-formlabel {
+    width: 500px;
+    /* Ustaw żądaną szerokość */
+    display: inline-block;
+  }
 
-.ms-formlabel {
-  width: 500px; /* Ustaw żądaną szerokość */
-  display: inline-block;
-}
+  .ms-formbody {
+    width: 780px;
+    /* Ustaw żądaną szerokość */
+  }
 
-.ms-formbody {
-  width: 780px; /* Ustaw żądaną szerokość */
-  
-}
+  .form-section {
+    width: 1260px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
 
-.form-section {
-  width: 1280px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #f9f9f9;
-}
+  .section-header {
+    font-size: 16px;
+    background-color: #0078d7;
+    color: white;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+  }
 
-.section-header {
-  font-weight: bold;
-  font-size: 16px;
-  background-color: #0078d7;
-  color: white;
-  padding: 10px;
-  border-radius: 5px 5px 0 0;
-  cursor: pointer;
-}
+  .section-header_3 {
+    font-size: 16px;
+    background-color: #6d6d6d;
+    color: white;
+    padding: 10px;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+  }
 
-.section-header:hover {
-  background-color: #005a9e;
-}
+  .section-content {
+    display: none;
+    padding: 10px;
+  }
 
-.section-content {
-  display: none;
-  padding: 10px;
-}
+  .sub-section {
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+  }
 
-.sub-section {
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
-}
+  .sub-section-header {
 
-.sub-section-header {
+    font-weight: bold;
+    padding: 5px;
+    background-color: #a0e5f1;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+  }
 
-  font-weight: bold;
-  padding: 5px;
-  background-color: #f7f7f7;
-  border-radius: 5px 5px 0 0;
-  cursor: pointer;
-}
+  .sub-section-content {
 
-.sub-section-content {
+    padding: 5px;
+    display: none;
+  }
 
-  padding: 5px;
-  display: none;
-}
-.even-row {
-  background-color: #ffffff; /* Białe tło dla parzystych wierszy */
-}
+  .even-row {
+    background-color: #ffffff;
+    /* Białe tło dla parzystych wierszy */
+    padding: 6px 3px;
+  }
 
-.odd-row {
-  background-color: #c5c4c4; /* Szare tło dla nieparzystych wierszy */
-}
+  .odd-row {
+    background-color: #f7f7f7;
+    /* Szare tło dla nieparzystych wierszy */
+    padding: 6px 3px;
+  }
 
-
+  /* .ms-formtoolbar {
+    display: none;
+  } */
 </style>

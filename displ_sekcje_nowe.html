@@ -2,22 +2,22 @@
   (async function () {
 
     document.addEventListener("DOMContentLoaded", function () {
-  const toolbars = document.querySelectorAll(".ms-formtoolbar");
-  const deltaPlaceholder = document.querySelector("#DeltaPlaceHolderMain");
+      const toolbars = document.querySelectorAll(".ms-formtoolbar");
+      const deltaPlaceholder = document.querySelector("#DeltaPlaceHolderMain");
 
-  if (!deltaPlaceholder) {
-    console.error("Nie znaleziono DeltaPlaceHolderMain.");
-    return;
-  }
+      if (!deltaPlaceholder) {
+        console.error("Nie znaleziono DeltaPlaceHolderMain.");
+        return;
+      }
 
-  toolbars.forEach((toolbar) => {
-    if (toolbar.textContent.trim().includes("Wersja")) {
-      // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
-      deltaPlaceholder.appendChild(toolbar);
-      console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
-    }
-  });
-});
+      toolbars.forEach((toolbar) => {
+        if (toolbar.textContent.trim().includes("Wersja")) {
+          // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
+          deltaPlaceholder.appendChild(toolbar);
+          console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
+        }
+      });
+    });
 
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -26,7 +26,6 @@
         console.error("Nie znaleziono tabeli formularza.");
         return;
       }
-
 
       const rows = Array.from(formTable.querySelectorAll("tr"));
 
@@ -59,6 +58,19 @@
       ];
 
       const formContainer = formTable.parentElement;
+
+      const infoDiv = document.createElement('div');
+  infoDiv.style.backgroundColor = '#fff8b2'; // Żółte tło
+  infoDiv.style.border = '1px solid #ffcc00';
+  infoDiv.style.padding = '10px';
+  infoDiv.style.marginBottom = '10px';
+  infoDiv.style.borderRadius = '5px';
+  infoDiv.style.fontWeight = 'bold';
+  infoDiv.textContent =
+    // "Jesteś w trybie edycji. Podczas wypełniania poszczególnych pól w formularzu proszę o dokładne zapoznanie się z opisami do poszczególnych pól.";
+    "Jesteś w trybie podglądu Karty Rozwiązania."
+  // Dodanie div przed sekcją 1
+  formContainer.insertBefore(infoDiv, formContainer.firstChild);
 
       const allowedGroups = [
         "ADMINISTRATORZY TECHNICZNI (SZZ)",

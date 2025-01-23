@@ -1,0 +1,12 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Znajdź wszystkie linki na stronie
+      const links = document.querySelectorAll('a[href*="Details.aspx"]');
+      
+      // Iteruj przez linki i dodaj target="_blank"
+      links.forEach(function (link) {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer"); // Dla bezpieczeństwa
+      });
+    });
+  </script>

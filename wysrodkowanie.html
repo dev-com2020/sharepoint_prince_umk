@@ -1,0 +1,66 @@
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Ustaw styl dla całej strony
+      document.body.style.display = "flex";
+      document.body.style.flexDirection = "column";
+      document.body.style.height = "100%";
+      document.body.style.margin = "0";
+    
+      // Główna zawartość
+      const mainContainer = document.querySelector("#s4-bodyContainer") || document.querySelector(".ms-core-page");
+      if (mainContainer) {
+        mainContainer.style.flexGrow = "1";
+        mainContainer.style.display = "flex";
+        mainContainer.style.flexDirection = "column";
+        mainContainer.style.justifyContent = "flex-start";
+        mainContainer.style.alignItems = "center";
+        mainContainer.style.width = "90%";
+        mainContainer.style.maxWidth = "1200px";
+        mainContainer.style.margin = "20px auto";
+        mainContainer.style.padding = "20px";
+        mainContainer.style.backgroundColor = "white";
+        mainContainer.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
+      } else {
+        console.error("Nie znaleziono głównego kontenera strony.");
+      }
+    
+      // Stopka
+      const footer = document.querySelector("#footer") || document.querySelector(".ms-core-footer");
+      if (footer) {
+        footer.style.backgroundColor = "#f0f0f0";
+        footer.style.textAlign = "center";
+        footer.style.padding = "10px";
+        footer.style.width = "100%";
+        footer.style.boxShadow = "0 -2px 5px rgba(0, 0, 0, 0.1)";
+      }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const frameElement = document.querySelector(".specific-frame-class"); // Zastąp rzeczywistym selektorem
+      if (frameElement) {
+        frameElement.style.border = "none";
+        frameElement.style.boxShadow = "none";
+        frameElement.style.outline = "none";
+      } else {
+        console.warn("Nie znaleziono elementu odpowiedzialnego za ramkę.");
+      }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const bodyContainer = document.getElementById("s4-bodyContainer");
+      if (bodyContainer) {
+        bodyContainer.style.boxShadow = "none";
+        bodyContainer.style.border = "none";
+        bodyContainer.style.backgroundColor = "transparent"; // Jeśli chcesz usunąć tło
+      } else {
+        console.warn("Nie znaleziono elementu #s4-bodyContainer.");
+      }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+    // Znajdź element App Launcher i ukryj go
+    const appLauncher = document.querySelector("#O365_MainLink_NavMenu"); // Zastąp selektorem dla danego elementu
+    if (appLauncher) {
+        appLauncher.style.display = "none";
+    } else {
+        console.warn("Nie znaleziono elementu App Launcher.");
+    }
+});
+    </script>

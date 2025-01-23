@@ -1,0 +1,235 @@
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Tablica z definicjami elementów do dodania
+      const elements = [
+        { name: "SPBookmark_Pracownik_x0020_odp_x002e__x0020", text: "Osoby / Daty / Zatwierdzenia / Uwagi" },
+        { name: "SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", text: "Informacje ogólne" },
+        { name: "SPBookmark_Typ_x0020_projektu_x0020_wg_x002", text: "Typ / Ocena Punktowa / Skala Projektu" },
+        { name: "SPBookmark_USE_x0020_Projektu_x0020__x002d_", text: "Uzasadnienie Społeczno-Ekonomiczne Projektu" },
+        { name: "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", text: "Opis Produktu Końcowego Projektu" },
+        { name: "SPBookmark_Formu_x0142_a_x0020_realizacji_x", text: "Formuła Realizacji i Dodatkowe Informacje Dotyczące Finansowania Projektu" },
+        { name: "SPBookmark_Integracja_x0020_z_x0020_innymi_", text: "Informacje Dotyczące Projektów Informatycznych" },
+        { name: "SPBookmark_PEI_x0020__x002d__x0020_Planowan", text: "Plan Etapu Inicjowania" },
+        { name: "SPBookmark_Kierownik_x0020_Projektu", text: "Osoby / Daty / Zatwierdzenia / Uwagi" }
+      ];
+  
+      // Iteracja po elementach i ich tworzenie
+      elements.forEach(({ name, text }) => {
+  const targetAnchor = document.querySelector(`a[name="${name}"]`);
+  
+  if (targetAnchor) {
+    const sectionDiv = document.createElement("div");
+    sectionDiv.className = "form-section";
+
+    const sectionHeader = document.createElement("div");
+    sectionHeader.textContent = text;
+    sectionHeader.className = "section-header";
+
+    const sectionContent = document.createElement("div");
+    sectionContent.className = "section-content";
+    sectionContent.style.display = "none";
+
+    sectionHeader.addEventListener("click", () => {
+      sectionContent.style.display = sectionContent.style.display === "none" ? "block" : "none";
+    });
+
+    sectionDiv.appendChild(sectionHeader);
+    sectionDiv.appendChild(sectionContent);
+    
+    // Wstawienie nie zmieniające układu kreskowanego elementu
+    targetAnchor.insertAdjacentElement("afterend", sectionDiv);
+  } else {
+    console.warn(`Nie znaleziono znacznika <a> z atrybutem name="${name}".`);
+  }
+});
+
+    });
+  
+    document.addEventListener("DOMContentLoaded", async function () {
+      const formTable = document.querySelector(".ms-formtable");
+      if (!formTable) {
+        console.error("Nie znaleziono tabeli formularza.");
+        return;
+      }
+  
+      // Definicja sekcji formularza
+      const rows = Array.from(formTable.querySelectorAll("tr"));
+      const sections = [
+        { title: "SEKCJA 1", range: [0, 31] },
+        { title: "SEKCJA 2", range: [32, 74] },
+        { title: "SEKCJA 3", range: [75, rows.length - 1] },
+      ];
+  
+      // Grupy, które mają dostęp do rozwijania sekcji
+      const allowedGroups = [
+        "ADMINISTRATORZY TECHNICZNI (SZZ)",
+        "GOSPODARCZE (SZZ)",
+        "SPECJALIŚCI DS. SZP (SZZ)",
+      ];
+  
+      // Funkcja sprawdzająca, czy użytkownik należy do grupy
+      async function isUserInAllowedGroup() {
+        try {
+          const response = await fetch(
+            `${_spPageContextInfo.webAbsoluteUrl}/_api/web/currentuser?$expand=Groups`,
+            {
+              headers: {
+                Accept: "application/json;odata=verbose",
+              },
+            }
+          );
+  
+          if (!response.ok) {
+            throw new Error("Błąd podczas pobierania informacji o użytkowniku.");
+          }
+  
+          const data = await response.json();
+          const userGroups = data.d.Groups.results.map(group => group.Title);
+          return userGroups.some(userGroup =>
+            allowedGroups.some(allowedGroup => userGroup.includes(allowedGroup))
+          );
+        } catch (error) {
+          console.error(error);
+          return false; // Domyślnie brak dostępu w razie błędu
+        }
+      }
+  
+      // Funkcja budująca sekcje
+      async function buildSections() {
+        const hasAccess = await isUserInAllowedGroup();
+  
+        sections.forEach(section => {
+          const sectionDiv = document.createElement("div");
+          sectionDiv.className = "form-section";
+  
+          const sectionHeader = document.createElement("div");
+          sectionHeader.textContent = section.title;
+          sectionHeader.className = "section-header";
+  
+          const sectionContent = document.createElement("div");
+          sectionContent.className = "section-content";
+          rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
+            sectionContent.appendChild(row);
+          });
+  
+          if (section.title === "SEKCJA 3") {
+            if (!hasAccess) {
+              sectionContent.style.display = "none";
+              sectionHeader.style.backgroundColor = "#ccc";
+              sectionHeader.style.cursor = "not-allowed";
+            } else {
+              sectionContent.style.display = "none";
+              sectionHeader.style.cursor = "pointer";
+  
+              sectionHeader.addEventListener("click", () => {
+                sectionContent.style.display =
+                  sectionContent.style.display === "none" ? "block" : "none";
+              });
+            }
+          } else {
+            sectionContent.style.display = "none";
+            sectionHeader.style.cursor = "pointer";
+  
+            sectionHeader.addEventListener("click", () => {
+              sectionContent.style.display =
+                sectionContent.style.display === "none" ? "block" : "none";
+            });
+          }
+  
+          sectionDiv.appendChild(sectionHeader);
+          sectionDiv.appendChild(sectionContent);
+          formTable.parentNode.insertBefore(sectionDiv, formTable);
+        });
+  
+        formTable.style.display = "none";
+      }
+  
+      // Uruchomienie budowy sekcji
+      buildSections();
+    });
+  
+    const modeInfo = document.createElement("div");
+    modeInfo.className = "mode-info";
+    const toolbar = document.querySelector(".ms-formtoolbar");
+    if (toolbar && toolbar.textContent.includes("Zapisz")) {
+      modeInfo.textContent = "Formularz jest w trybie edycji.";
+    } else {
+      modeInfo.textContent = "Formularz jest w trybie odczytu.";
+    }
+    document.body.insertBefore(modeInfo, document.body.firstChild);
+  </script>
+  
+  <style>
+    /* Styl nowego banera */
+    .custom-banner {
+  background-color: #0078d7;
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px; /* Utrzymanie odstępu między elementami */
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.4;
+  position: relative; /* Zapewnia, że div nie wpływa na inne elementy */
+  z-index: 1;
+}
+.custom-banner + * {
+  margin-top: 10px; /* Upewnia się, że element poniżej ma odstęp */
+}
+  
+    /* Hover efekt dla banera */
+    .custom-banner:hover {
+      background-color: #005a9e;
+      cursor: default;
+    }
+  
+    #O365_MainLink_NavMenu {
+      display: none !important;
+    }
+  
+    /* Informacja o trybie edycji */
+    .mode-info {
+      background-color: #e6b800;
+      color: #000;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      border-bottom: 2px solid #e6b800;
+      margin-bottom: 20px;
+    }
+  
+    /* Stylizacja sekcji */
+    .form-section {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+    }
+  
+    .section-header {
+  background-color: #0078d7;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px 5px 0 0;
+  cursor: pointer;
+  position: relative; /* Zachowanie układu względem innych elementów */
+}
+  
+    .section-header:hover {
+      background-color: #005a9e;
+    }
+  
+    .section-content {
+      display: none;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+  </style>
+  

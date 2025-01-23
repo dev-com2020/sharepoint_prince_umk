@@ -1,0 +1,164 @@
+<script>
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        const formTable = document.querySelector(".ms-formtable");
+        if (!formTable) {
+            console.error("Nie znaleziono tabeli formularza.");
+            return;
+        }
+
+    // Definicja sekcji formularza
+    const rows = Array.from(formTable.querySelectorAll("tr"));
+    const sections = [
+      { title: "SEKCJA 1", range: [0, 39] },
+      { title: "SEKCJA 2", range: [40, 96] },
+      { title: "SEKCJA 3", range: [97, rows.length - 1] },
+    ];
+        // Grupy, które mają dostęp do rozwijania sekcji
+    const allowedGroups = [
+      "ADMINISTRATORZY TECHNICZNI (SZZ)",
+      "GOSPODARCZE (SZZ)",
+      "SPECJALIŚCI DS. SZP (SZZ)",
+    ];
+
+
+    // Funkcja sprawdzająca, czy użytkownik należy do grupy
+    async function isUserInAllowedGroup() {
+      try {
+        const response = await fetch(
+          `${_spPageContextInfo.webAbsoluteUrl}/_api/web/currentuser?$expand=Groups`,
+          {
+            headers: {
+              Accept: "application/json;odata=verbose",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Błąd podczas pobierania informacji o użytkowniku.");
+        }
+
+        const data = await response.json();
+        const userGroups = data.d.Groups.results.map(group => group.Title);
+        return userGroups.some(userGroup =>
+          allowedGroups.some(allowedGroup => userGroup.includes(allowedGroup))
+        );
+      } catch (error) {
+        console.error(error);
+        return false; // Domyślnie brak dostępu w razie błędu
+      }
+    }
+
+// Funkcja budująca sekcje
+async function buildSections() {
+      const hasAccess = await isUserInAllowedGroup();
+
+      sections.forEach(section => {
+        const sectionDiv = document.createElement("div");
+        sectionDiv.className = "form-section";
+
+        const sectionHeader = document.createElement("div");
+        sectionHeader.textContent = section.title;
+        sectionHeader.className = "section-header";
+
+        const sectionContent = document.createElement("div");
+        sectionContent.className = "section-content";
+        rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
+          sectionContent.appendChild(row);
+        });
+
+        // Zablokowanie rozwijania sekcji dla użytkowników spoza grup
+        if (section.title === "SEKCJA 3") {
+          isUserInAllowedGroup().then(hasAccess => {
+            if (!hasAccess) {
+              sectionContent.style.display = "none";
+              sectionHeader.style.backgroundColor = "#ccc"; // Zablokowana sekcja w szarym kolorze
+              sectionHeader.style.cursor = "not-allowed";
+            } else {
+              sectionContent.style.display = "none";
+              sectionHeader.style.cursor = "pointer";
+
+              sectionHeader.addEventListener("click", () => {
+                sectionContent.style.display =
+                  sectionContent.style.display === "none" ? "block" : "none";
+              });
+            }
+          }).catch(error => {
+            console.error("Error checking user group access:", error);
+          });
+        } else {
+          sectionContent.style.display = "none";
+          sectionHeader.style.cursor = "pointer";
+
+          sectionHeader.addEventListener("click", () => {
+            sectionContent.style.display =
+              sectionContent.style.display === "none" ? "block" : "none";
+          });
+        }
+
+        sectionDiv.appendChild(sectionHeader);
+        sectionDiv.appendChild(sectionContent);
+        formTable.parentNode.insertBefore(sectionDiv, formTable);
+      });
+
+      formTable.style.display = "none";
+    }
+
+    // Uruchomienie budowy sekcji
+    buildSections();
+  });
+    // Dodanie informacji o trybie edycji
+    const modeInfo = document.createElement("div");
+    modeInfo.className = "mode-info";
+    const toolbar = document.querySelector(".ms-formtoolbar"); // Pasek narzędzi formularza
+    if (toolbar && toolbar.textContent.includes("Zapisz")) {
+        modeInfo.textContent = "Formularz jest w trybie odczytu.";
+    } else {
+        modeInfo.textContent = "Formularz jest w trybie edycji.";
+    }
+    document.body.insertBefore(modeInfo, document.body.firstChild);
+</script>
+
+<style>
+    #O365_MainLink_NavMenu /* Ukrywa menu aplikacji */ {
+        display: none !important;
+    }
+    .mode-info {
+        background-color: #f32873;
+        color: #000;
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        border-bottom: 2px solid #e6b800;
+        margin-bottom: 20px;
+    }
+
+    .form-section {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .section-header {
+        background-color: #0078d7;
+        color: white;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+    }
+
+    .section-header:hover {
+        background-color: #005a9e;
+    }
+
+    .section-content {
+        display: none;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+</style>

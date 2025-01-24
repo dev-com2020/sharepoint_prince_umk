@@ -1,12 +1,22 @@
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Znajdź wszystkie linki na stronie
-      const links = document.querySelectorAll('a[href*="Details.aspx"]');
-      
-      // Iteruj przez linki i dodaj target="_blank"
-      links.forEach(function (link) {
-        link.setAttribute("target", "_blank");
-        link.setAttribute("rel", "noopener noreferrer"); // Dla bezpieczeństwa
-      });
+document.addEventListener("DOMContentLoaded", function () {
+    // Tablica z różnymi selektorami
+    const selectors = [
+        'a[href*="Details.aspx"]',
+        'a[href*="Example.aspx"]',
+        'a[href*="Info.aspx"]',
+        'a[href^="https://"]'
+    ];
+
+    selectors.forEach(selector => {
+        // Wybierz linki dla każdego selektora
+        const links = document.querySelectorAll(selector);
+        
+        // Iteruj przez znalezione linki i dodaj target="_blank"
+        links.forEach(function (link) {
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer"); // Dla bezpieczeństwa
+        });
     });
+});
   </script>

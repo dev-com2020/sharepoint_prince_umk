@@ -22,29 +22,42 @@
         document.addEventListener("DOMContentLoaded", function () {
             const inputs = document.querySelectorAll('input[id*="$DateTimeFieldDate"]');
 
-            if (inputs.length === 0) {
-                console.warn("Nie znaleziono pól input zawierających frazę '$DateTimeFieldDate' w ID.");
-                return;
-            }
+    if (inputs.length === 0) {
+        console.warn("Nie znaleziono elementów .ms-dtinput.");
+        return;
+    }
 
-            inputs.forEach(input => {
-                const currentTd = input.closest('td'); // Znajdź bieżący <td> zawierający input
-                if (!currentTd) {
-                    console.error("Nie można znaleźć nadrzędnego <td> dla input:", input);
-                    return;
-                }
+    inputs.forEach(input => {
+        const currentTd = input.closest('td'); // Znajdź rodzica <td>
+        if (!currentTd) {
+            console.error("Nie można znaleźć nadrzędnego <td> dla .ms-dtinput:", input);
+            return;
+        }
 
-                const nextTd = currentTd.nextElementSibling; // Znajdź następny <td>
-                if (!nextTd) {
-                    console.warn("Brak kolejnego <td> dla input:", input);
-                    return;
-                }
+        const currentTr = currentTd.closest('tr'); // Znajdź rodzica <tr>
+        if (!currentTr) {
+            console.error("Nie można znaleźć nadrzędnego <tr> dla .ms-dtinput:", input);
+            return;
+        }
 
-                // Przenieś input do kolejnego <td>
-                nextTd.appendChild(input);
-                console.log("Przeniesiono pole input o ID:", input.id, "do kolejnego <td>.");
-            });
-        });
+        const previousTr = currentTr.previousElementSibling; // Znajdź poprzedni <tr>
+        if (!previousTr) {
+            console.warn("Brak poprzedniego <tr> dla .ms-dtinput:", input);
+            return;
+        }
+
+        const firstTd = previousTr.querySelector('td'); // Znajdź pierwszy <td> w poprzednim <tr>
+        if (!firstTd) {
+            console.warn("Brak <td> w poprzednim <tr> dla .ms-dtinput:", input);
+            return;
+        }
+
+        // Przenieś element .ms-dtinput do poprzedniego <tr>
+        firstTd.appendChild(input);
+        console.log("Przeniesiono element .ms-dtinput:", input);
+    });
+});
+
 
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -66,6 +79,7 @@
                     row.classList.add('odd-row');
                 }
             });
+
 
             const elements = [
                 { name: "SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", text: "Informacje ogólne", range: [0, 20], defaultOpen: true },
@@ -203,6 +217,7 @@
                 formContainer.appendChild(sectionDiv);
             });
 
+
             formTable.style.display = "none";
         });
     })();
@@ -290,4 +305,5 @@
         padding: 6px 0;
 
     }
+
 </style>

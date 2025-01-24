@@ -82,9 +82,16 @@
           ];
 
           const sections = [
-              { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"] },
-              { title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"] },
-              { title: "SEKCJA 3", filter: [], range: [97, rows.length - 1] }
+              { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"],
+              additionalText: "KARTA INICJATYWY / Karta Projektu Organizacyjnego (Cz. 1 - Zlecenie Przygotowania Projektu) / Karta Projektu Informatycznego (Cz.1 - Zlecenie Przygotowania Projektu) / Karta Programu / Karta Portfela\nKarta Działania Bieżącego (w ramach Programu) / Karta Działania Bieżącego (w ramach Portfela) / Karta Projektu Inwestycyjnego (w ramach Programu) / Karta Projektu Inwestycyjnego (w ramach Portfela)"
+              },
+              { title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"],
+              additionalText: "Karta Projektu Organizacyjnego (Cz. 2 - Założenia Projektu) / Karta Projektu Informatycznego (Cz.2 - Założenia Projektu)"
+               },
+              
+              { title: "SEKCJA 3", filter: [], range: [97, rows.length - 1],
+              additionalText:"(Sekcja Zarządzana Przez OR-08)" 
+               }
           ];
 
           const formContainer = formTable.parentElement;
@@ -138,74 +145,86 @@
           const userHasAccess = await isUserInAllowedGroup();
 
           sections.forEach(section => {
-              const sectionDiv = document.createElement('div');
-              sectionDiv.className = 'form-section';
+        const sectionDiv = document.createElement('div');
+        sectionDiv.className = 'form-section';
 
-              const sectionHeader = document.createElement('div');
-              sectionHeader.textContent = `➕ ${section.title}`;
-              sectionHeader.className = 'section-header';
+        const sectionHeader = document.createElement('div');
+        sectionHeader.innerHTML = `➕ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 
-              const sectionContent = document.createElement('div');
-              sectionContent.className = 'section-content';
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+        sectionHeader.className = 'section-header';
 
-              if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
-                  sectionContent.style.display = 'block';
-                  sectionHeader.textContent = `➖ ${section.title}`;
-              } else if (section.title === "SEKCJA 3" && userHasAccess) {
-                  sectionContent.style.display = 'block';
-                  sectionHeader.className = 'section-header_3'
-                  sectionHeader.textContent = `➖ ${section.title}`;
-              } else {
-                  sectionContent.style.display = 'none';
-              }
+        const sectionContent = document.createElement('div');
+        sectionContent.className = 'section-content';
 
-              if (section.range) {
-                  rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
-                      sectionContent.appendChild(row);
-                  });
-              } else {
-                  elements
-                      .filter(element => section.filter.includes(element.name))
-                      .forEach(element => {
-                          const subSection = document.createElement('div');
-                          subSection.className = 'sub-section';
+        if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
+          sectionContent.style.display = 'block';
+          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 
-                          const subSectionHeader = document.createElement('div');
-                          subSectionHeader.textContent = element.text;
-                          subSectionHeader.className = 'sub-section-header';
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+        } else if (section.title === "SEKCJA 3" && userHasAccess) {
+          sectionContent.style.display = 'block';
+          sectionHeader.className = 'section-header_3'
+          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 
-                          const subSectionContent = document.createElement('div');
-                          subSectionContent.className = 'sub-section-content';
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+        } else {
+          sectionContent.style.display = 'none';
+        }
 
-                          subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
+        if (section.range) {
+          rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
+            sectionContent.appendChild(row);
+          });
+        } else {
+          elements
+            .filter(element => section.filter.includes(element.name))
+            .forEach(element => {
+              const subSection = document.createElement('div');
+              subSection.className = 'sub-section';
 
-                          rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
-                              subSectionContent.appendChild(row);
-                          });
+              const subSectionHeader = document.createElement('div');
+              subSectionHeader.textContent = element.text;
+              subSectionHeader.className = 'sub-section-header';
 
-                          subSectionHeader.addEventListener('click', () => {
-                              subSectionContent.style.display =
-                                  subSectionContent.style.display === 'none' ? 'block' : 'none';
-                          });
+              const subSectionContent = document.createElement('div');
+              subSectionContent.className = 'sub-section-content';
 
-                          subSection.appendChild(subSectionHeader);
-                          subSection.appendChild(subSectionContent);
-                          sectionContent.appendChild(subSection);
-                      });
-              }
+              subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
 
-              sectionHeader.addEventListener('click', () => {
-                  const isHidden = sectionContent.style.display === 'none';
-                  sectionContent.style.display = isHidden ? 'block' : 'none';
-                  sectionHeader.textContent = `${isHidden ? '➖' : '➕'} ${section.title}`;
+              rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
+                subSectionContent.appendChild(row);
               });
 
-              sectionDiv.appendChild(sectionHeader);
-              sectionDiv.appendChild(sectionContent);
-              formContainer.appendChild(sectionDiv);
-          });
+              subSectionHeader.addEventListener('click', () => {
+                subSectionContent.style.display =
+                  subSectionContent.style.display === 'none' ? 'block' : 'none';
+              });
 
-          formTable.style.display = "none";
+              subSection.appendChild(subSectionHeader);
+              subSection.appendChild(subSectionContent);
+              sectionContent.appendChild(subSection);
+            });
+        }
+
+        sectionHeader.addEventListener('click', () => {
+          const isHidden = sectionContent.style.display === 'none';
+          sectionContent.style.display = isHidden ? 'block' : 'none';
+          sectionHeader.innerHTML = `${isHidden ? '➖' : '➕'} <span style="font-weight: bold;">${section.title}</span>
+   <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+   <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+        });
+
+        sectionDiv.appendChild(sectionHeader);
+        sectionDiv.appendChild(sectionContent);
+        formContainer.appendChild(sectionDiv);
+      });
+
+      formTable.style.display = "none";
       });
   })();
 </script>

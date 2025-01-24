@@ -52,9 +52,12 @@
       ];
 
       const sections = [
-        { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"] },
-        { title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"] },
-        { title: "SEKCJA 3", filter: [], range: [75, rows.length - 1] }
+        { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"], 
+        additionalText: "KARTA INICJATYWY / Karta Projektu Organizacyjnego (Cz. 1 - Zlecenie Przygotowania Projektu) / Karta Projektu Informatycznego (Cz.1 - Zlecenie Przygotowania Projektu) / Karta Programu / Karta Portfela\nKarta Działania Bieżącego (w ramach Programu) / Karta Działania Bieżącego (w ramach Portfela) / Karta Projektu Inwestycyjnego (w ramach Programu) / Karta Projektu Inwestycyjnego (w ramach Portfela)" },
+        { title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"],
+          additionalText: "Karta Projektu Organizacyjnego (Cz. 2 - Założenia Projektu) / Karta Projektu Informatycznego (Cz.2 - Założenia Projektu)"
+         },
+        { title: "SEKCJA 3", filter: [], range: [75, rows.length - 1],additionalText:"(Sekcja Zarządzana Przez OR-08)" }
       ];
 
       const formContainer = formTable.parentElement;
@@ -112,7 +115,10 @@
         sectionDiv.className = 'form-section';
 
         const sectionHeader = document.createElement('div');
-        sectionHeader.textContent = `➕ ${section.title}`;
+        sectionHeader.innerHTML = `➕ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
         sectionHeader.className = 'section-header';
 
         const sectionContent = document.createElement('div');
@@ -120,11 +126,17 @@
 
         if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
           sectionContent.style.display = 'block';
-          sectionHeader.textContent = `➖ ${section.title}`;
+          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
         } else if (section.title === "SEKCJA 3" && userHasAccess) {
           sectionContent.style.display = 'block';
           sectionHeader.className = 'section-header_3'
-          sectionHeader.textContent = `➖ ${section.title}`;
+          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
         } else {
           sectionContent.style.display = 'none';
         }
@@ -167,7 +179,10 @@
         sectionHeader.addEventListener('click', () => {
           const isHidden = sectionContent.style.display === 'none';
           sectionContent.style.display = isHidden ? 'block' : 'none';
-          sectionHeader.textContent = `${isHidden ? '➖' : '➕'} ${section.title}`;
+          sectionHeader.innerHTML = `${isHidden ? '➖' : '➕'} <span style="font-weight: bold;">${section.title}</span>
+   <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+   <span style="font-size: 0.9em;">${section.additionalText}</span>`;
         });
 
         sectionDiv.appendChild(sectionHeader);

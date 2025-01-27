@@ -1,314 +1,331 @@
 <script>
-  (async function () {
-
-      document.addEventListener("DOMContentLoaded", function () {
-          const toolbars = document.querySelectorAll(".ms-formtoolbar");
-          const deltaPlaceholder = document.querySelector("#DeltaPlaceHolderMain");
-
-          if (!deltaPlaceholder) {
-              console.error("Nie znaleziono DeltaPlaceHolderMain.");
-              return;
-          }
-
-          toolbars.forEach((toolbar) => {
-              if (toolbar.textContent.trim().includes("Wersja")) {
-                  // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
-                  deltaPlaceholder.appendChild(toolbar);
-                  console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
-              }
-          });
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-          const inputs = document.querySelectorAll('input[id*="$DateTimeFieldDate"]');
-
-          if (inputs.length === 0) {
-              console.warn("Nie znaleziono pól input zawierających frazę '$DateTimeFieldDate' w ID.");
-              return;
-          }
-
-          inputs.forEach(input => {
-              const currentTd = input.closest('td'); // Znajdź bieżący <td> zawierający input
-              if (!currentTd) {
-                  console.error("Nie można znaleźć nadrzędnego <td> dla input:", input);
-                  return;
-              }
-
-              const nextTd = currentTd.nextElementSibling; // Znajdź następny <td>
-              if (!nextTd) {
-                  console.warn("Brak kolejnego <td> dla input:", input);
-                  return;
-              }
-
-              // Przenieś input do kolejnego <td>
-              nextTd.appendChild(input);
-              console.log("Przeniesiono pole input o ID:", input.id, "do kolejnego <td>.");
-          });
-      });
+    (async function () {
 
 
+        // sekcja debug
 
-
-      document.addEventListener('DOMContentLoaded', async () => {
-          const formTable = document.querySelector('.ms-formtable');
-          if (!formTable) {
-              console.error("Nie znaleziono tabeli formularza.");
-              return;
-          }
-
-          // Przetwarzanie wierszy tabeli formularza
-          const rows = Array.from(formTable.querySelectorAll('tr'));
-
-
-          // Dodaj klasy CSS do wierszy tabeli
-          rows.forEach((row, index) => {
-              if (index % 2 === 0) {
-                  row.classList.add('even-row');
-              } else {
-                  row.classList.add('odd-row');
-              }
-          });
-
-          const elements = [
-              { name: "SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", text: "Informacje ogólne", range: [0, 20], defaultOpen: true },
-              { name: "SPBookmark_Pracownik_x0020_odp_x002e__x0020", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [21, 38], defaultOpen: true },
-              { name: "SPBookmark_Typ_x0020_projektu_x0020_wg_x002", text: "Typ / Ocena Punktowa / Skala Projektu", range: [39, 44] },
-              { name: "SPBookmark_USE_x0020_Projektu_x0020__x002d_", text: "Uzasadnienie Społeczno-Ekonomiczne Projektu", range: [45, 56] },
-              { name: "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", text: "Opis Produktu Końcowego Projektu", range: [57, 60] },
-              { name: "SPBookmark_Formu_x0142_a_x0020_realizacji_x", text: "Formuła Realizacji i Dodatkowe Informacje Dotyczące Finansowania Projektu", range: [61, 68] },
-              { name: "SPBookmark_Integracja_x0020_z_x0020_innymi_", text: "Informacje Dotyczące Projektów Informatycznych", range: [69, 71] },
-              { name: "SPBookmark_PEI_x0020__x002d__x0020_Planowan", text: "Plan Etapu Inicjowania", range: [72, 77] },
-              { name: "SPBookmark_Kierownik_x0020_Projektu", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [78, 96] }
-          ];
-
-          const sections = [
-              { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"],
-              additionalText: "KARTA INICJATYWY / Karta Projektu Organizacyjnego (Cz. 1 - Zlecenie Przygotowania Projektu) / Karta Projektu Informatycznego (Cz.1 - Zlecenie Przygotowania Projektu) / Karta Programu / Karta Portfela\nKarta Działania Bieżącego (w ramach Programu) / Karta Działania Bieżącego (w ramach Portfela) / Karta Projektu Inwestycyjnego (w ramach Programu) / Karta Projektu Inwestycyjnego (w ramach Portfela)"
-              },
-              { title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"],
-              additionalText: "Karta Projektu Organizacyjnego (Cz. 2 - Założenia Projektu) / Karta Projektu Informatycznego (Cz.2 - Założenia Projektu)"
-               },
-              
-              { title: "SEKCJA 3", filter: [], range: [97, rows.length - 1],
-              additionalText:"(Sekcja Zarządzana Przez OR-08)" 
-               }
-          ];
-
-          const formContainer = formTable.parentElement;
-
-          const infoDiv = document.createElement('div');
-          infoDiv.style.backgroundColor = '#ff0000';
-          infoDiv.style.border = '1px solid #ffcc00';
-          infoDiv.style.padding = '10px';
-          infoDiv.style.marginBottom = '10px';
-          infoDiv.style.borderRadius = '5px';
-          infoDiv.style.fontWeight = 'bold';
-          infoDiv.textContent =
-              "Jesteś w trybie dodawania formularza. Podczas wypełniania poszczególnych pól w formularzu proszę o dokładne zapoznanie się z opisami do poszczególnych pól.";
-
-          // Dodanie div przed sekcją 1
-          formContainer.insertBefore(infoDiv, formContainer.firstChild);
-
-          const allowedGroups = [
-              "ADMINISTRATORZY TECHNICZNI (SZZ)",
-              "GOSPODARCZE (SZZ)",
-              "SPECJALIŚCI DS. SZP (SZZ)",
-          ];
-
-          // Funkcja sprawdzająca, czy użytkownik należy do grupy
-          async function isUserInAllowedGroup() {
-              try {
-                  const response = await fetch(
-                      `${_spPageContextInfo.webAbsoluteUrl}/_api/web/currentuser?$expand=Groups`,
-                      {
-                          headers: {
-                              Accept: "application/json;odata=verbose",
-                          },
-                      }
-                  );
-
-                  if (!response.ok) {
-                      throw new Error("Błąd podczas pobierania informacji o użytkowniku.");
-                  }
-
-                  const data = await response.json();
-                  const userGroups = data.d.Groups.results.map(group => group.Title);
-                  return userGroups.some(userGroup =>
-                      allowedGroups.some(allowedGroup => userGroup.includes(allowedGroup))
-                  );
-              } catch (error) {
-                  console.error(error);
-                  return false; // Domyślnie brak dostępu w razie błędu
-              }
-          }
-
-          const userHasAccess = await isUserInAllowedGroup();
-
-          sections.forEach(section => {
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'form-section';
-
-        const sectionHeader = document.createElement('div');
-        sectionHeader.innerHTML = `➕ <span style="font-weight: bold;">${section.title}</span>
-  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-
-  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
-        sectionHeader.className = 'section-header';
-
-        const sectionContent = document.createElement('div');
-        sectionContent.className = 'section-content';
-
-        if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
-          sectionContent.style.display = 'block';
-          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
-  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-
-  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
-        } else if (section.title === "SEKCJA 3" && userHasAccess) {
-          sectionContent.style.display = 'block';
-          sectionHeader.className = 'section-header_3'
-          sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
-  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
-
-  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+        const saveButton = document.querySelector('input[value="Zapisz"]');
+        if (saveButton) {
+            saveButton.style.display = 'inline-block'; // Upewnij się, że przycisk jest widoczny
+            saveButton.disabled = false; // Upewnij się, że przycisk jest aktywny
         } else {
-          sectionContent.style.display = 'none';
+            console.error('Nie znaleziono przycisku "Zapisz".');
         }
 
-        if (section.range) {
-          rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
-            sectionContent.appendChild(row);
-          });
-        } else {
-          elements
-            .filter(element => section.filter.includes(element.name))
-            .forEach(element => {
-              const subSection = document.createElement('div');
-              subSection.className = 'sub-section';
 
-              const subSectionHeader = document.createElement('div');
-              subSectionHeader.textContent = element.text;
-              subSectionHeader.className = 'sub-section-header';
+        // koniec sekcji debug
 
-              const subSectionContent = document.createElement('div');
-              subSectionContent.className = 'sub-section-content';
+        document.addEventListener("DOMContentLoaded", function () {
+            const toolbars = document.querySelectorAll(".ms-formtoolbar");
+            const deltaPlaceholder = document.querySelector("#DeltaPlaceHolderMain");
 
-              subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
+            if (!deltaPlaceholder) {
+                console.error("Nie znaleziono DeltaPlaceHolderMain.");
+                return;
+            }
 
-              rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
-                subSectionContent.appendChild(row);
-              });
-
-              subSectionHeader.addEventListener('click', () => {
-                subSectionContent.style.display =
-                  subSectionContent.style.display === 'none' ? 'block' : 'none';
-              });
-
-              subSection.appendChild(subSectionHeader);
-              subSection.appendChild(subSectionContent);
-              sectionContent.appendChild(subSection);
+            toolbars.forEach((toolbar) => {
+                if (toolbar.textContent.trim().includes("Wersja")) {
+                    // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
+                    deltaPlaceholder.appendChild(toolbar);
+                    console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
+                }
             });
-        }
+        });
 
-        sectionHeader.addEventListener('click', () => {
-          const isHidden = sectionContent.style.display === 'none';
-          sectionContent.style.display = isHidden ? 'block' : 'none';
-          sectionHeader.innerHTML = `${isHidden ? '➖' : '➕'} <span style="font-weight: bold;">${section.title}</span>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputs = document.querySelectorAll('input[id*="$DateTimeFieldDate"]');
+
+            if (inputs.length === 0) {
+                console.warn("Nie znaleziono pól input zawierających frazę '$DateTimeFieldDate' w ID.");
+                return;
+            }
+
+            inputs.forEach(input => {
+                const currentTd = input.closest('td'); // Znajdź bieżący <td> zawierający input
+                if (!currentTd) {
+                    console.error("Nie można znaleźć nadrzędnego <td> dla input:", input);
+                    return;
+                }
+
+                const nextTd = currentTd.nextElementSibling; // Znajdź następny <td>
+                if (!nextTd) {
+                    console.warn("Brak kolejnego <td> dla input:", input);
+                    return;
+                }
+
+                // Przenieś input do kolejnego <td>
+                nextTd.appendChild(input);
+                console.log("Przeniesiono pole input o ID:", input.id, "do kolejnego <td>.");
+            });
+        });
+
+
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const formTable = document.querySelector('.ms-formtable');
+            if (!formTable) {
+                console.error("Nie znaleziono tabeli formularza.");
+                return;
+            }
+
+            // Przetwarzanie wierszy tabeli formularza
+            const rows = Array.from(formTable.querySelectorAll('tr'));
+
+
+            // Dodaj klasy CSS do wierszy tabeli
+            rows.forEach((row, index) => {
+                if (index % 2 === 0) {
+                    row.classList.add('even-row');
+                } else {
+                    row.classList.add('odd-row');
+                }
+            });
+
+            const elements = [
+                { name: "SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", text: "Informacje ogólne", range: [0, 20], defaultOpen: true },
+                { name: "SPBookmark_Pracownik_x0020_odp_x002e__x0020", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [21, 38], defaultOpen: true },
+                { name: "SPBookmark_Typ_x0020_projektu_x0020_wg_x002", text: "Typ / Ocena Punktowa / Skala Projektu", range: [39, 44] },
+                { name: "SPBookmark_USE_x0020_Projektu_x0020__x002d_", text: "Uzasadnienie Społeczno-Ekonomiczne Projektu", range: [45, 56] },
+                { name: "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", text: "Opis Produktu Końcowego Projektu", range: [57, 60] },
+                { name: "SPBookmark_Formu_x0142_a_x0020_realizacji_x", text: "Formuła Realizacji i Dodatkowe Informacje Dotyczące Finansowania Projektu", range: [61, 68] },
+                { name: "SPBookmark_Integracja_x0020_z_x0020_innymi_", text: "Informacje Dotyczące Projektów Informatycznych", range: [69, 71] },
+                { name: "SPBookmark_PEI_x0020__x002d__x0020_Planowan", text: "Plan Etapu Inicjowania", range: [72, 77] },
+                { name: "SPBookmark_Kierownik_x0020_Projektu", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [78, 96] }
+            ];
+
+            const sections = [
+                {
+                    title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"],
+                    additionalText: "KARTA INICJATYWY / Karta Projektu Organizacyjnego (Cz. 1 - Zlecenie Przygotowania Projektu) / Karta Projektu Informatycznego (Cz.1 - Zlecenie Przygotowania Projektu) / Karta Programu / Karta Portfela\nKarta Działania Bieżącego (w ramach Programu) / Karta Działania Bieżącego (w ramach Portfela) / Karta Projektu Inwestycyjnego (w ramach Programu) / Karta Projektu Inwestycyjnego (w ramach Portfela)"
+                },
+                {
+                    title: "SEKCJA 2", filter: ["SPBookmark_Typ_x0020_projektu_x0020_wg_x002", "SPBookmark_USE_x0020_Projektu_x0020__x002d_", "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", "SPBookmark_Formu_x0142_a_x0020_realizacji_x", "SPBookmark_Integracja_x0020_z_x0020_innymi_", "SPBookmark_PEI_x0020__x002d__x0020_Planowan", "SPBookmark_Kierownik_x0020_Projektu"],
+                    additionalText: "Karta Projektu Organizacyjnego (Cz. 2 - Założenia Projektu) / Karta Projektu Informatycznego (Cz.2 - Założenia Projektu)"
+                },
+
+                {
+                    title: "SEKCJA 3", filter: [], range: [97, rows.length - 1],
+                    additionalText: "(Sekcja Zarządzana Przez OR-08)"
+                }
+            ];
+
+            const formContainer = formTable.parentElement;
+
+            const infoDiv = document.createElement('div');
+            infoDiv.style.backgroundColor = '#ff0000';
+            infoDiv.style.border = '1px solid #ffcc00';
+            infoDiv.style.padding = '10px';
+            infoDiv.style.marginBottom = '10px';
+            infoDiv.style.borderRadius = '5px';
+            infoDiv.style.fontWeight = 'bold';
+            infoDiv.textContent =
+                "Jesteś w trybie dodawania formularza. Podczas wypełniania poszczególnych pól w formularzu proszę o dokładne zapoznanie się z opisami do poszczególnych pól.";
+
+            // Dodanie div przed sekcją 1
+            formContainer.insertBefore(infoDiv, formContainer.firstChild);
+
+            const allowedGroups = [
+                "ADMINISTRATORZY TECHNICZNI (SZZ)",
+                "GOSPODARCZE (SZZ)",
+                "SPECJALIŚCI DS. SZP (SZZ)",
+            ];
+
+            // Funkcja sprawdzająca, czy użytkownik należy do grupy
+            async function isUserInAllowedGroup() {
+                try {
+                    const response = await fetch(
+                        `${_spPageContextInfo.webAbsoluteUrl}/_api/web/currentuser?$expand=Groups`,
+                        {
+                            headers: {
+                                Accept: "application/json;odata=verbose",
+                            },
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error("Błąd podczas pobierania informacji o użytkowniku.");
+                    }
+
+                    const data = await response.json();
+                    const userGroups = data.d.Groups.results.map(group => group.Title);
+                    return userGroups.some(userGroup =>
+                        allowedGroups.some(allowedGroup => userGroup.includes(allowedGroup))
+                    );
+                } catch (error) {
+                    console.error(error);
+                    return false; // Domyślnie brak dostępu w razie błędu
+                }
+            }
+
+            const userHasAccess = await isUserInAllowedGroup();
+
+            sections.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'form-section';
+
+                const sectionHeader = document.createElement('div');
+                sectionHeader.innerHTML = `➕ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+                sectionHeader.className = 'section-header';
+
+                const sectionContent = document.createElement('div');
+                sectionContent.className = 'section-content';
+
+                if (section.title === "SEKCJA 1" || section.title === "SEKCJA 2") {
+                    sectionContent.style.display = 'block';
+                    sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+                } else if (section.title === "SEKCJA 3" && userHasAccess) {
+                    sectionContent.style.display = 'block';
+                    sectionHeader.className = 'section-header_3'
+                    sectionHeader.innerHTML = `➖ <span style="font-weight: bold;">${section.title}</span>
+  <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
+
+  <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+                } else {
+                    sectionContent.style.display = 'none';
+                }
+
+                if (section.range) {
+                    rows.slice(section.range[0], section.range[1] + 1).forEach(row => {
+                        sectionContent.appendChild(row);
+                    });
+                } else {
+                    elements
+                        .filter(element => section.filter.includes(element.name))
+                        .forEach(element => {
+                            const subSection = document.createElement('div');
+                            subSection.className = 'sub-section';
+
+                            const subSectionHeader = document.createElement('div');
+                            subSectionHeader.textContent = element.text;
+                            subSectionHeader.className = 'sub-section-header';
+
+                            const subSectionContent = document.createElement('div');
+                            subSectionContent.className = 'sub-section-content';
+
+                            subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
+
+                            rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
+                                subSectionContent.appendChild(row);
+                            });
+
+                            subSectionHeader.addEventListener('click', () => {
+                                subSectionContent.style.display =
+                                    subSectionContent.style.display === 'none' ? 'block' : 'none';
+                            });
+
+                            subSection.appendChild(subSectionHeader);
+                            subSection.appendChild(subSectionContent);
+                            sectionContent.appendChild(subSection);
+                        });
+                }
+
+                sectionHeader.addEventListener('click', () => {
+                    const isHidden = sectionContent.style.display === 'none';
+                    sectionContent.style.display = isHidden ? 'block' : 'none';
+                    sectionHeader.innerHTML = `${isHidden ? '➖' : '➕'} <span style="font-weight: bold;">${section.title}</span>
    <br>-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br>
 
    <span style="font-size: 0.9em;">${section.additionalText}</span>`;
+                });
+
+                sectionDiv.appendChild(sectionHeader);
+                sectionDiv.appendChild(sectionContent);
+                formContainer.appendChild(sectionDiv);
+            });
+
+            formTable.style.display = "none";
         });
-
-        sectionDiv.appendChild(sectionHeader);
-        sectionDiv.appendChild(sectionContent);
-        formContainer.appendChild(sectionDiv);
-      });
-
-      formTable.style.display = "none";
-      });
-  })();
+    })();
 </script>
 
 
 <style>
-  .ms-formlabel {
-      width: 500px;
-      /* Ustaw żądaną szerokość */
-      display: inline-block;
-      padding: 5px 5px 5px 5px;
-  }
+    .ms-formlabel {
+        width: 500px;
+        /* Ustaw żądaną szerokość */
+        display: inline-block;
+        padding: 5px 5px 5px 5px;
+    }
 
-  .ms-formbody {
-      width: 780px;
-      padding: 5px 5px 5px 5px;
-      /* Ustaw żądaną szerokość */
-  }
+    .ms-formbody {
+        width: 780px;
+        padding: 5px 5px 5px 5px;
+        /* Ustaw żądaną szerokość */
+    }
 
-  .form-section {
-      width: 1260px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding: 10px;
-      background-color: #f9f9f9;
-  }
+    .form-section {
+        width: 1260px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
 
-  .section-header {
-      font-size: 16px;
-      background-color: #0078d7;
-      color: white;
-      padding: 10px;
-      border-radius: 5px 5px 0 0;
-      cursor: pointer;
-  }
+    .section-header {
+        font-size: 16px;
+        background-color: #0078d7;
+        color: white;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+    }
 
-  .section-header_3 {
-      font-size: 16px;
-      background-color: #6d6d6d;
-      color: white;
-      padding: 10px;
-      border-radius: 5px 5px 0 0;
-      cursor: pointer;
-  }
+    .section-header_3 {
+        font-size: 16px;
+        background-color: #6d6d6d;
+        color: white;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+    }
 
-  .section-content {
-      display: none;
-      padding: 10px;
-  }
+    .section-content {
+        display: none;
+        padding: 10px;
+    }
 
-  .sub-section {
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #fff;
-  }
+    .sub-section {
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+    }
 
-  .sub-section-header {
+    .sub-section-header {
 
-      font-weight: bold;
-      padding: 5px;
-      background-color: #a0e5f1;
-      border-radius: 5px 5px 0 0;
-      cursor: pointer;
-  }
+        font-weight: bold;
+        padding: 5px;
+        background-color: #a0e5f1;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+    }
 
-  .sub-section-content {
+    .sub-section-content {
 
-      padding: 5px;
-      display: none;
-  }
+        padding: 5px;
+        display: none;
+    }
 
-  .even-row {
-      background-color: #ffffff;
-      /* Białe tło dla parzystych wierszy */
-      padding: 6px 0;
+    .even-row {
+        background-color: #ffffff;
+        /* Białe tło dla parzystych wierszy */
+        padding: 6px 0;
 
-  }
+    }
 
-  .odd-row {
-      background-color: #f7f7f7;
-      /* Szare tło dla nieparzystych wierszy */
-      padding: 6px 0;
+    .odd-row {
+        background-color: #f7f7f7;
+        /* Szare tło dla nieparzystych wierszy */
+        padding: 6px 0;
 
-  }
+    }
 </style>

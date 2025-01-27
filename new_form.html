@@ -204,21 +204,23 @@
                             subSection.className = 'sub-section';
 
                             const subSectionHeader = document.createElement('div');
-                            subSectionHeader.textContent = element.text;
+                            subSectionHeader.innerHTML = `➕ ${element.text}`;
                             subSectionHeader.className = 'sub-section-header';
 
                             const subSectionContent = document.createElement('div');
                             subSectionContent.className = 'sub-section-content';
 
                             subSectionContent.style.display = element.defaultOpen ? 'block' : 'none';
+                            subSectionHeader.innerHTML = element.defaultOpen ? `➖ ${element.text}` : `➕ ${element.text}`;
 
                             rows.slice(element.range[0], element.range[1] + 1).forEach(row => {
                                 subSectionContent.appendChild(row);
                             });
 
                             subSectionHeader.addEventListener('click', () => {
-                                subSectionContent.style.display =
-                                    subSectionContent.style.display === 'none' ? 'block' : 'none';
+                                const isHidden = subSectionContent.style.display === 'none';
+                                subSectionContent.style.display = isHidden ? 'block' : 'none';
+                                subSectionHeader.innerHTML = isHidden ? `➖ ${element.text}` : `➕ ${element.text}`;
                             });
 
                             subSection.appendChild(subSectionHeader);

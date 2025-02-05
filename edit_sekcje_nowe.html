@@ -71,8 +71,8 @@
   
             const elements = [
                 { name: "SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", text: "Informacje ogólne", range: [0, 20], defaultOpen: true },
-                { name: "SPBookmark_Pracownik_x0020_odp_x002e__x0020", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [21, 38], defaultOpen: true },
-                { name: "SPBookmark_Typ_x0020_projektu_x0020_wg_x002", text: "Typ / Ocena Punktowa / Skala Projektu", range: [39, 44] },
+                { name: "SPBookmark_Pracownik_x0020_odp_x002e__x0020", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [21, 39], defaultOpen: true },
+                { name: "SPBookmark_Typ_x0020_projektu_x0020_wg_x002", text: "Typ / Ocena Punktowa / Skala Projektu", range: [40, 44] },
                 { name: "SPBookmark_USE_x0020_Projektu_x0020__x002d_", text: "Uzasadnienie Społeczno-Ekonomiczne Projektu", range: [45, 56] },
                 { name: "SPBookmark_Opis_x002f_przeznaczenie_x0020_P", text: "Opis Produktu Końcowego Projektu", range: [57, 60] },
                 { name: "SPBookmark_Formu_x0142_a_x0020_realizacji_x", text: "Formuła Realizacji i Dodatkowe Informacje Dotyczące Finansowania Projektu", range: [61, 68] },
@@ -80,7 +80,7 @@
                 { name: "SPBookmark_PEI_x0020__x002d__x0020_Planowan", text: "Plan Etapu Inicjowania", range: [72, 77] },
                 { name: "SPBookmark_Kierownik_x0020_Projektu", text: "Osoby / Daty / Zatwierdzenia / Uwagi", range: [78, 96] }
             ];
-  
+
             const sections = [
                 { title: "SEKCJA 1", filter: ["SPBookmark_Numer_x0020_przedsi_x0119_wzi_x0", "SPBookmark_Pracownik_x0020_odp_x002e__x0020"],
                 additionalText: "KARTA INICJATYWY / Karta Projektu Organizacyjnego (Cz. 1 - Zlecenie Przygotowania Projektu) / Karta Projektu Informatycznego (Cz.1 - Zlecenie Przygotowania Projektu) / Karta Programu / Karta Portfela\nKarta Działania Bieżącego (w ramach Programu) / Karta Działania Bieżącego (w ramach Portfela) / Karta Projektu Inwestycyjnego (w ramach Programu) / Karta Projektu Inwestycyjnego (w ramach Portfela)"
@@ -225,6 +225,54 @@
           sectionDiv.appendChild(sectionContent);
           formContainer.appendChild(sectionDiv);
         });
+        setTimeout(() => {
+      const fieldsToMove = [
+        "Termin_x0020_rozpocz", 
+        "Szacowany_x0020_termin",
+        "Data_x0020_przygotowania",
+        "Data_x0020_akceptacji_",
+        "USE_x0020__",
+        "PEI_x0020__",
+        "Zgodno_x015b__",
+        "Data_x0020_archiwizacji_",
+        "Data_x0020_zatw_"
+      ];
+
+      fieldsToMove.forEach(field => {
+        const fieldInputs = document.querySelectorAll(`input[id^='${field}']`);
+        fieldInputs.forEach(fieldInput => {
+          const linkElement = fieldInput.closest("tr").querySelector("a");
+          const previousRow = fieldInput.closest("tr").previousElementSibling;
+          if (previousRow) {
+            const targetTd = previousRow.querySelectorAll("td")[1]; // Wybór drugiego TD
+            if (targetTd) {
+              const spanElement = targetTd.querySelector("span"); // Znalezienie spana
+              if (spanElement) {
+                if (linkElement) {
+                  targetTd.insertBefore(linkElement, spanElement);
+                }
+                targetTd.insertBefore(fieldInput, spanElement);
+                console.log(`Przeniesiono ${field} PRZED <span> w odpowiednim <td>`);
+              } else {
+                console.warn("Nie znaleziono elementu <span> do umieszczenia przed.");
+              }
+            } else {
+              console.warn("Nie znaleziono docelowego <td> do przeniesienia elementów.");
+            }
+          } else {
+            console.warn("Nie znaleziono poprzedniego TR.");
+          }
+        });
+      });
+    }, 2000);
+    const opiekaRow = rows.find(row => row.textContent.includes("Opieka (OR-08):"));
+    if (opiekaRow) {
+      const sekcja3Content = document.querySelector(".section-header_3 + .section-content");
+      if (sekcja3Content) {
+        sekcja3Content.appendChild(opiekaRow);
+        console.log("Przeniesiono pole 'Opieka (OR-08):' do SEKCJA 3.");
+      }
+    }
   
         formTable.style.display = "none";
         });

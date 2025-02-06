@@ -2,8 +2,6 @@
     (async function () {
 
 
-        // sekcja debug
-
         const saveButton = document.querySelector('input[value="Zapisz"]');
         if (saveButton) {
             saveButton.style.display = 'inline-block'; // Upewnij się, że przycisk jest widoczny
@@ -12,8 +10,6 @@
             console.error('Nie znaleziono przycisku "Zapisz".');
         }
 
-
-        // koniec sekcji debug
 
         document.addEventListener("DOMContentLoaded", function () {
             const toolbars = document.querySelectorAll(".ms-formtoolbar");
@@ -56,7 +52,6 @@
 
                 // Przenieś input do kolejnego <td>
                 nextTd.appendChild(input);
-                console.log("Przeniesiono pole input o ID:", input.id, "do kolejnego <td>.");
             });
         });
 
@@ -262,25 +257,21 @@
     fieldInputs.forEach(fieldInput => {
       const currentRow = fieldInput.closest("tr");
       if (!currentRow) {
-        console.warn(`Nie znaleziono TR dla pola: ${field}`);
         return;
       }
 
       const previousRow = currentRow.previousElementSibling;
       if (!previousRow) {
-        console.warn(`Nie znaleziono poprzedniego TR dla pola: ${field}`);
         return;
       }
 
       const targetTd = previousRow.querySelectorAll("td")[1]; // Wybór drugiego TD
       if (!targetTd) {
-        console.warn(`Nie znaleziono docelowego <td> dla pola: ${field}`);
         return;
       }
 
       const spanElement = targetTd.querySelector("span"); // Znalezienie spana
       if (!spanElement) {
-        console.warn(`Nie znaleziono <span> w docelowym <td> dla pola: ${field}`);
         return;
       }
 
@@ -299,16 +290,13 @@
       // Jeśli znaleziono `iframe`, przenosimy go obok inputa
       if (iframeElement) {
         targetTd.appendChild(iframeElement);
-        console.log(`Przeniesiono iframe dla pola: ${field}`);
       }
 
-      console.log(`Przeniesiono ${field} PRZED <span> w odpowiednim <td>`);
 
       // Po przeniesieniu sprawdzamy, czy wiersz zawiera tylko ukryte elementy i go usuwamy
       setTimeout(() => {
         if (isRowEmptyOrHidden(currentRow)) {
           currentRow.remove();
-          console.log(`Usunięto wiersz TR, który zawierał tylko ukryte elementy.`);
         }
       }, 500);
     });
@@ -316,15 +304,13 @@
 
   // Usunięcie wszystkich wierszy zawierających wyłącznie ukryte elementy, ale NIE usuwamy tych z iframe, bo już je przenieśliśmy
   setTimeout(() => {
-    document.querySelectorAll("tr").forEach(row => {
+    document.querySelectorAll(".form-section tr").forEach(row => { // 🔹 Ograniczenie do .form-section
       if (isRowEmptyOrHidden(row)) {
         row.remove();
-        console.log("Usunięto wiersz zawierający tylko ukryte elementy.");
       }
     });
 
-    // 🔹 Po usunięciu pustych wierszy, ponowne przypisanie klas even-row i odd-row
-    const allRows = document.querySelectorAll("tr");
+    const allRows = document.querySelectorAll(".form-section tr"); // 🔹 Pobieramy tylko wiersze z form-section
     allRows.forEach((row, index) => {
       row.classList.remove("even-row", "odd-row");
       if (index % 2 === 0) {
@@ -334,12 +320,10 @@
       }
     });
 
-    console.log("Zaktualizowano klasy wierszy: even-row / odd-row.");
   }, 1000);
 
 }, 2000);
 
-// 🔍 Funkcja sprawdzająca, czy wiersz <tr> jest pusty lub zawiera tylko ukryte elementy
 function isRowEmptyOrHidden(row) {
   const tds = row.querySelectorAll("td");
 
@@ -359,44 +343,20 @@ function isRowEmptyOrHidden(row) {
   });
 }
 
+
+
 const opiekaRow = rows.find(row => row.textContent.includes("Opieka (OR-08):"));
 if (opiekaRow) {
   const sekcja3Content = document.querySelector(".section-header_3 + .section-content");
   if (sekcja3Content) {
     
-    // 🔹 Przenosimy wiersz do SEKCJA 3
     sekcja3Content.appendChild(opiekaRow);
-    console.log("Przeniesiono pole 'Opieka (OR-08):' do SEKCJA 3.");
-
-    // 🔹 Wymuszamy aktualizację klas even-row / odd-row
-    setTimeout(() => {
-      const sectionRows = sekcja3Content.querySelectorAll("tr");
-
-      sectionRows.forEach((row, index) => {
-        row.classList.remove("even-row", "odd-row"); // Usunięcie wszystkich klas
-
-        // 🔹 Wymuszenie usunięcia klasy poprzez manipulację DOM
-        row.style.display = "none";
-        row.offsetHeight; // Trigger reflow
-        row.style.display = "";
-
-        // 🔹 Ustawiamy nową klasę
-        if (index % 2 === 0) {
-          row.classList.add("even-row");
-        } else {
-          row.classList.add("odd-row");
-        }
-      });
-
-      console.log("Zaktualizowano klasy even-row / odd-row w SEKCJA 3.");
-    }, 100); // Opóźnienie dla bezpieczeństwa (100ms) wymusi odświeżenie DOM
+    opiekaRow.style.backgroundColor = "#ffffff";
 
   }
 }
 
-
-
-    setTimeout(() => {
+setTimeout(() => {
   const radioGroupPrefixes = [
     "Formu_x0142_a_x0020_realizacji_x_75a8d435-e467-4dcb-8964-b9b91112d8cf_MultiChoiceOption_",
     "Przedsi_x0119_wzi_x0119_cie_x002_7e7affe6-50a4-4725-b4e9-6aa98e78676b_MultiChoiceOption_",
@@ -407,77 +367,64 @@ if (opiekaRow) {
     const radioInputs = document.querySelectorAll(`input[id^='${prefix}']`);
     
     if (radioInputs.length === 0) {
-      console.warn(`Nie znaleziono żadnych pól dla prefixu: ${prefix}`);
       return;
     }
 
-    // Pobranie pierwszego radio buttona z grupy, aby znaleźć jego wiersz (tr)
     const firstRadioInput = radioInputs[0];
     const currentRow = firstRadioInput.closest("tr");
 
     if (!currentRow) {
-      console.warn(`Nie znaleziono wiersza TR dla grupy: ${prefix}`);
       return;
     }
 
-    // Znalezienie poprzedniego wiersza TR (gdzie mamy przenieść radio buttony)
     const previousRow = currentRow.previousElementSibling;
     if (!previousRow) {
-      console.warn(`Nie znaleziono poprzedniego TR dla grupy: ${prefix}`);
       return;
     }
 
-    // Znalezienie drugiego TD w poprzednim wierszu
-    const targetTd = previousRow.querySelectorAll("td")[1];
+    const targetTd = previousRow.querySelectorAll("td")[1]; // Znalezienie drugiego TD w poprzednim wierszu
     if (!targetTd) {
-      console.warn(`Nie znaleziono docelowego <td> dla grupy: ${prefix}`);
       return;
     }
 
-    // Sprawdzamy, czy już istnieje kontener dla tej konkretnej grupy
-    let containerDiv = targetTd.querySelector(".radio-container");
-    if (!containerDiv) {
-      containerDiv = document.createElement("div");
-      containerDiv.classList.add("radio-container");
-      containerDiv.style.display = "flex";
-      containerDiv.style.flexDirection = "column"; // Ustawienie układu w kolumnie
-      containerDiv.style.gap = "5px"; // Odstęp między elementami
-      targetTd.appendChild(containerDiv);
+    // Znalezienie <span class="ms-metadata"> wewnątrz targetTd
+    const metadataSpan = targetTd.querySelector("span.ms-metadata");
+    if (!metadataSpan) {
+      return;
     }
 
-    // Przenoszenie wszystkich radio buttonów z tej konkretnej grupy
+    // Przenoszenie radio buttonów ZA <span class="ms-metadata">
     radioInputs.forEach(radioInput => {
       const radioSpan = radioInput.closest("span.ms-RadioText");
       if (radioSpan) {
-        radioSpan.style.display = "block"; // Zapewnienie, że każdy element jest w osobnej linii
-        containerDiv.appendChild(radioSpan); // Dodanie do odpowiedniego kontenera
-        console.log(`Przeniesiono ${radioInput.id} do kontenera w układzie kolumnowym.`);
-      } else {
-        console.warn(`Nie znaleziono <span> dla pola: ${radioInput.id}`);
+        radioSpan.style.display = "block";
+
+        // **Poprawiona metoda wstawiania ZA `metadataSpan`**
+        metadataSpan.parentNode.insertBefore(radioSpan, metadataSpan);
+        
       }
     });
 
-    // Po przeniesieniu radio buttonów usuwamy pusty wiersz, jeśli jest pusty
+    // Usunięcie pustego wiersza, jeśli został pusty
     setTimeout(() => {
-      if (currentRow && currentRow.querySelectorAll("td").length === 1 && currentRow.querySelector("td").innerHTML.trim() === "") {
+      if (isRowEmptyOrHidden(currentRow)) {
         currentRow.remove();
-        console.log(`Usunięto pusty wiersz TR po przeniesieniu grupy: ${prefix}`);
+        
       }
     }, 500);
   });
 
-  // Usunięcie wszystkich pustych wierszy, które mają tylko puste <td>
+  // Usunięcie pustych wierszy i odświeżenie klas even-row / odd-row
   setTimeout(() => {
-    document.querySelectorAll("tr").forEach(row => {
+    document.querySelectorAll(".form-section tr").forEach(row => { 
       const tds = row.querySelectorAll("td");
       if (tds.length === 1 && tds[0].innerHTML.trim() === "") {
         row.remove();
-        console.log("Usunięto pusty wiersz TR.");
       }
     });
 
-    // 🔹 Po usunięciu pustych wierszy, ponowne przypisanie klas even-row i odd-row
-    const allRows = document.querySelectorAll("tr");
+
+    const allRows = document.querySelectorAll(".form-section tr"); 
     allRows.forEach((row, index) => {
       row.classList.remove("even-row", "odd-row");
       if (index % 2 === 0) {
@@ -487,10 +434,31 @@ if (opiekaRow) {
       }
     });
 
-    console.log("Zaktualizowano klasy wierszy: even-row / odd-row.");
+    
   }, 1000);
 
 }, 2000);
+
+// Funkcja sprawdzająca, czy wiersz <tr> jest pusty lub zawiera tylko ukryte elementy
+function isRowEmptyOrHidden(row) {
+  const tds = row.querySelectorAll("td");
+
+  return [...tds].every(td => {
+    const children = td.children;
+
+    // Jeśli <td> jest pusty, sprawdzamy innerHTML
+    if (children.length === 0) {
+      return td.innerHTML.trim() === "";
+    }
+
+    // Jeśli <td> zawiera tylko ukryte elementy, uznajemy go za pusty
+    return [...children].every(child => {
+      const computedStyle = window.getComputedStyle(child);
+      return computedStyle.display === "none" || computedStyle.visibility === "hidden";
+    });
+  });
+}
+
    
         });
     })();

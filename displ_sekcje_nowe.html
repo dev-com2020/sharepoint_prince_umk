@@ -14,7 +14,7 @@
         if (toolbar.textContent.trim().includes("Wersja")) {
           // Przenieś toolbar jako ostatnie dziecko DeltaPlaceHolderMain
           deltaPlaceholder.appendChild(toolbar);
-          console.log("Przeniesiono toolbar do DeltaPlaceHolderMain.");
+          
         }
       });
     });
@@ -29,7 +29,7 @@
 
       const rows = Array.from(formTable.querySelectorAll("tr"));
 
-      // Dodaj klasy CSS do wierszy tabeli
+  
       rows.forEach((row, index) => {
         if (index % 2 === 0) {
           row.classList.add('even-row');
@@ -70,9 +70,9 @@
   infoDiv.style.borderRadius = '5px';
   infoDiv.style.fontWeight = 'bold';
   infoDiv.textContent =
-    // "Jesteś w trybie edycji. Podczas wypełniania poszczególnych pól w formularzu proszę o dokładne zapoznanie się z opisami do poszczególnych pól.";
+    
     "Jesteś w trybie podglądu Karty Rozwiązania."
-  // Dodanie div przed sekcją 1
+
   formContainer.insertBefore(infoDiv, formContainer.firstChild);
 
       const allowedGroups = [
@@ -198,7 +198,7 @@
       const sekcja3Content = document.querySelector(".section-header_3 + .section-content");
       if (sekcja3Content) {
         sekcja3Content.appendChild(opiekaRow);
-        console.log("Przeniesiono pole 'Opieka (OR-08):' do SEKCJA 3.");
+        
       }
     }
     });
